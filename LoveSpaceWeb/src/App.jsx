@@ -155,42 +155,20 @@ const Logo = ({ size = 40, showText = true }) => (
   </div>
 );
 
-/* ─── PHONE FRAME ────────────────────────────────────────── */
-const Phone = ({ children }) => (
-  <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100vh", padding: "10px" }}>
-    <div style={{
-      width:"100%", maxWidth:400, height:"100%", maxHeight:800,
-      background:"#111018",
-      borderRadius:44,
-      border:"2px solid rgba(255,255,255,0.12)",
-      boxShadow:"0 32px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 0 6px rgba(255,255,255,0.03)",
-      overflow:"hidden",
-      position:"relative",
-    }}>
-      {/* notch */}
-      <div style={{
-        position:"absolute", top:0, left:"50%", transform:"translateX(-50%)",
-        width:110, height:28,
-        background:"#111018",
-        borderBottomLeftRadius:16, borderBottomRightRadius:16,
-        zIndex:20,
-        borderBottom:"1.5px solid rgba(255,255,255,0.06)",
-      }}/>
-      {/* status bar */}
-      <div style={{
-        position:"absolute", top:8, left:20, right:20,
-        display:"flex", justifyContent:"space-between", alignItems:"center",
-        zIndex:21, fontSize:10, color:C.muted, fontWeight:600,
-      }}>
-        <span>9:41</span>
-        <span style={{ display:"flex", gap:4 }}>
-          <span>●●●</span><span>WiFi</span><span>🔋</span>
-        </span>
-      </div>
-      {/* content */}
-      <div style={{ width:"100%", height:"100%", overflowY:"auto", overflowX:"hidden", position:"relative" }}>
-        {children}
-      </div>
+/* ─── APP CONTAINER ──────────────────────────────────────── */
+const AppContainer = ({ children }) => (
+  <div style={{ 
+    width: "100%", 
+    height: "100vh", 
+    height: "100svh",
+    background: "#0d0a14",
+    overflow: "hidden",
+    position: "relative",
+    display: "flex",
+    flexDirection: "column"
+  }}>
+    <div style={{ flex: 1, width: "100%", height: "100%", overflowY: "auto", overflowX: "hidden", position: "relative" }}>
+      {children}
     </div>
   </div>
 );
@@ -245,10 +223,10 @@ const BottomNav = ({ active, setScreen }) => {
   ];
   return (
     <div style={{
-      position:"fixed", bottom:0, width:"100%", maxWidth:400,
+      position:"fixed", bottom:0, width:"100%", 
       background:"rgba(13,10,20,0.95)", backdropFilter:"blur(16px)",
       borderTop:`1px solid ${C.border}`,
-      display:"flex", padding:"10px 0 16px",
+      display:"flex", padding:"10px 0 calc(16px + env(safe-area-inset-bottom))",
       zIndex:10,
     }}>
       {tabs.map(t=>(
@@ -2580,7 +2558,7 @@ export default function App() {
   return (
     <>
       <GlobalStyles/>
-      <Phone>
+      <AppContainer>
         {loading ? (
           <SplashScreen />
         ) : !user ? (
@@ -2615,7 +2593,7 @@ export default function App() {
             {/* Notification Drawer */}
             {showNotifications && (
               <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.7)", backdropFilter:"blur(10px)", zIndex:1000, animation:"fadeIn 0.3s ease" }}>
-                <div style={{ position:"absolute", bottom:0, width:"100%", background:"#111018", borderRadius:"32px 32px 0 0", padding:"32px 24px", maxHeight:"80%", overflowY:"auto" }}>
+                <div style={{ position:"absolute", bottom:0, width:"100%", background:"#111018", borderRadius:"32px 32px 0 0", padding:"32px 24px calc(32px + env(safe-area-inset-bottom))", maxHeight:"90%", overflowY:"auto" }}>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
                     <h2 style={{ color:"#fff", fontSize:20 }}>Notifications</h2>
                     <div style={{ display:"flex", gap:15 }}>
@@ -2639,7 +2617,7 @@ export default function App() {
             )}
           </>
         )}
-      </Phone>
+      </AppContainer>
     </>
   );
 }
