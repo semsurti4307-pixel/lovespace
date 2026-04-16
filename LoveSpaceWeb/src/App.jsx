@@ -2469,7 +2469,6 @@ const LoveMapScreen = ({ user, userData, partnerData, setScreen }) => {
   );
 };
 
-import TogetherModeScreen from "./TogetherMode";
 
 /* ════════════════════════════════════════════════════════════
    MAIN APP
@@ -2681,5 +2680,3 @@ export default function App() {
     </>
   );
 }
-
-export default App;
