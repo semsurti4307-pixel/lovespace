@@ -17,12 +17,29 @@ const GlobalStyles = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Nunito:wght@300;400;500;600&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body, html { background: #0d0a14; font-family: 'Nunito', sans-serif; overflow: hidden; height: 100vh; width: 100vw; }
+    body, html { 
+      background: #050408; 
+      font-family: 'Nunito', sans-serif; 
+      overflow: hidden; 
+      height: 100vh; 
+      width: 100vw;
+      overscroll-behavior: none; /* Prevent browser bounce */
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    #root {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      background: #050408;
+    }
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(255,107,157,0.3); border-radius: 2px; }
     input::placeholder { color: rgba(255,255,255,0.2); }
-    input { caret-color: #ff6b9d; }
+    input { caret-color: #ff6b9d; outline: none; }
 
     @keyframes fadeIn  { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
     @keyframes heartBeat {
@@ -159,17 +176,20 @@ const Logo = ({ size = 40, showText = true }) => (
 const AppContainer = ({ children }) => (
   <div style={{ 
     width: "100%", 
+    maxWidth: "430px",
     height: "100vh", 
     height: "100svh",
     background: "#0d0a14",
     overflow: "hidden",
     position: "relative",
-    display: "flex",
-    flexDirection: "column"
+    display: "flex", // Stack content and nav
+    flexDirection: "column",
+    boxShadow: "0 0 100px rgba(196,77,255,0.15)",
+    borderLeft: "1px solid rgba(255,255,255,0.05)",
+    borderRight: "1px solid rgba(255,255,255,0.05)",
+    margin: "0 auto", // Center on desktop
   }}>
-    <div style={{ flex: 1, width: "100%", height: "100%", overflowY: "auto", overflowX: "hidden", position: "relative" }}>
-      {children}
-    </div>
+    {children}
   </div>
 );
 
@@ -223,11 +243,11 @@ const BottomNav = ({ active, setScreen }) => {
   ];
   return (
     <div style={{
-      position:"fixed", bottom:0, width:"100%", 
-      background:"rgba(13,10,20,0.95)", backdropFilter:"blur(16px)",
+      position:"absolute", bottom:0, width:"100%", height:"70px",
+      background:"rgba(13,10,20,0.96)", backdropFilter:"blur(20px)",
       borderTop:`1px solid ${C.border}`,
-      display:"flex", padding:"10px 0 calc(16px + env(safe-area-inset-bottom))",
-      zIndex:10,
+      display:"flex", alignItems:"center",
+      zIndex:110,
     }}>
       {tabs.map(t=>(
         <div key={t.id} onClick={() => setScreen(t.id)} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:3, cursor:"pointer" }}>
@@ -593,7 +613,6 @@ const HomeScreen = ({ user, userData, partnerData, memoryCount, dateCount, capsu
           ))}
         </div>
       </div>
-      <BottomNav active="home" setScreen={setScreen}/>
     </div>
   );
 };
@@ -908,7 +927,6 @@ const GamesScreen = ({ user, userData, partnerData, setScreen }) => {
         </div>
       )}
 
-      <BottomNav active="home" setScreen={setScreen}/>
     </div>
   );
 };
@@ -962,78 +980,69 @@ const ChatScreen = ({ user, partnerData, setScreen }) => {
   };
 
   return (
-    <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", position:"relative" }} className="screen">
+    <div style={{ height:"100%", width:"100%", display:"flex", flexDirection:"column", position:"relative", overflow:"hidden", background:"#0d0a14" }} className="screen">
       <GlassBg/>
-      {/* Header */}
-      <div style={{ position:"relative", zIndex:2, padding:"44px 16px 12px", display:"flex", alignItems:"center", gap:10, borderBottom:`1px solid ${C.border}` }}>
+      
+      {/* FIXED HEADER (Strict Top) */}
+      <div style={{ 
+        position:"absolute", top:0, left:0, right:0, zIndex:20,
+        padding:"12px 16px", background:"rgba(13,10,20,0.9)", backdropFilter:"blur(15px)",
+        display:"flex", alignItems:"center", gap:10, borderBottom:`1px solid ${C.border}`,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.3)"
+      }}>
         <div onClick={()=>setScreen("home")} style={{ fontSize:22, color:C.muted, cursor:"pointer", padding:"0 8px" }}>‹</div>
-        <div style={{ width:40, height:40, borderRadius:15, background:"linear-gradient(135deg,#6b9dff,#4daaff)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, boxShadow:"0 4px 12px rgba(107,157,255,0.3)" }}>
+        <div style={{ width:40, height:40, borderRadius:15, background:C.gradB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>
           {partnerData ? (partnerData.gender === "female" ? "👧" : "👦") : "👦"}
         </div>
         <div style={{ flex:1 }}>
           <div style={{ fontSize:14, color:C.text, fontWeight:700 }}>{partnerData?.name || "Partner"}</div>
           <div style={{ fontSize:10, color: partnerData?.isOnline ? "#4dff9d" : C.muted, display:"flex", alignItems:"center", gap:4 }}>
-            <span style={{ width:5, height:5, borderRadius:"50%", background: partnerData?.isOnline ? "#4dff9d" : C.muted, display:"inline-block", animation: partnerData?.isOnline ? "heartBeat 1.5s infinite" : "none" }}/>
+            <span style={{ width:6, height:6, borderRadius:"50%", background: partnerData?.isOnline ? "#4dff9d" : C.muted }}/>
             {partnerData?.isOnline ? "Online now" : "Offline"}
           </div>
         </div>
-        <div style={{ fontSize:18, color:C.muted, padding:8 }}>💕</div>
+        <div style={{ fontSize:18 }}>💕</div>
       </div>
 
+      {/* SCROLLABLE CONTENT */}
       {!partnerData ? (
         <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", color:C.muted, textAlign:"center", padding:40 }}>
           Connect with a partner to start chatting! ❤️
         </div>
       ) : (
-        <div ref={scrollRef} style={{ flex:1, overflowY:"auto", padding:"12px 16px 8px", display:"flex", flexDirection:"column", gap:8, position:"relative", zIndex:2 }}>
-          <div style={{ textAlign:"center", fontSize:10, color:C.dim, marginBottom:4, letterSpacing:"1px" }}>— OUR SPACE —</div>
+        <div ref={scrollRef} style={{ 
+          flex:1, overflowY:"auto", 
+          paddingTop: "75px", // Height of header
+          paddingBottom: "140px", // Height of input area 
+          paddingLeft: "16px", paddingRight: "16px",
+          display:"flex", flexDirection:"column", gap:10, position:"relative", zIndex:2,
+          scrollBehavior: "smooth",
+          WebkitOverflowScrolling: "touch"
+        }}>
+          <div style={{ textAlign:"center", fontSize:10, color:C.dim, margin:"10px 0", letterSpacing:"1.5px", textTransform:"uppercase" }}>— Securely Synced —</div>
           {chatLoading ? (
-            <div style={{ textAlign:"center", padding:"60px 20px", color:C.muted }}>
-              <div style={{ width:50, height:50, borderRadius:"50%", border:`3px solid ${C.border}`, borderTopColor:C.pink, animation:"spin 0.8s linear infinite", margin:"0 auto 16px" }}/>
-              <p style={{ fontSize:12 }}>Loading your conversations...</p>
+            <div style={{ textAlign:"center", padding:60 }}>
+              <div style={{ width:40, height:40, borderRadius:"50%", border:`3px solid ${C.border}`, borderTopColor:C.pink, animation:"spin 0.8s linear infinite", margin:"0 auto" }}/>
             </div>
           ) : messages.length === 0 ? (
-            <div style={{ textAlign:"center", padding:"60px 20px", color:C.muted, animation:"fadeIn 0.8s ease" }}>
-              <div style={{ width:80, height:80, borderRadius:"50%", background:C.gradSoft, display:"flex", alignItems:"center", justifyContent:"center", fontSize:40, margin:"0 auto 20px", border:`1px solid ${C.border}` }}>💌</div>
-              <h3 style={{ color:"#fff", marginBottom:8, fontFamily:"'Playfair Display',serif" }}>Start the Magic</h3>
-              <p style={{ fontSize:12, lineHeight:1.6 }}>No messages yet. Send a cute note to {partnerData?.name}!</p>
+            <div style={{ textAlign:"center", padding:40, animation:"fadeIn 0.8s ease" }}>
+              <div style={{ fontSize:40, marginBottom:16 }}>💌</div>
+              <p style={{ fontSize:12, color:C.muted }}>Your love story starts here. Send a message!</p>
             </div>
           ) : messages.map((m, idx) => {
             const isMine = m.senderId === user.uid;
-            const showTime = idx === 0 || idx % 5 === 0;
             return (
-              <div key={m.id}>
-                {showTime && (
-                  <div style={{ textAlign:"center", fontSize:9, color:C.dim, margin:"6px 0", letterSpacing:"0.5px" }}>
-                    {formatTime(m.timestamp)}
-                  </div>
-                )}
-                <div className="msg-in" 
-                  onMouseDown={()=>handleMsgHold(m.id, m.senderId)}
-                  onMouseUp={handleMsgRelease}
-                  onTouchStart={()=>handleMsgHold(m.id, m.senderId)}
-                  onTouchEnd={handleMsgRelease}
-                  style={{ display:"flex", justifyContent: isMine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, position:"relative" }}
-                >
-                  {!isMine && (
-                    <div style={{ width:24, height:24, borderRadius:10, background:"linear-gradient(135deg,#6b9dff,#4daaff)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0 }}>
-                      {partnerData.gender === "female" ? "👧" : "👦"}
-                    </div>
-                  )}
-                  <div style={{ maxWidth:"72%" }}>
-                    <div style={{
-                      padding:"11px 15px",
-                      borderRadius: isMine ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-                      background: selectedMsg === m.id ? "rgba(255,77,77,0.3)" : (isMine ? C.grad : C.surface),
-                      border: selectedMsg === m.id ? "1.5px solid #ff4d4d" : (isMine ? "none" : `1px solid ${C.border}`),
-                      fontSize:13, color: isMine ? "#fff" : C.text, lineHeight:1.5,
-                      boxShadow: isMine ? "0 4px 16px rgba(255,107,157,0.3)" : "none",
-                      transition:"all 0.2s",
-                    }}>{m.text}</div>
-                    <div style={{ fontSize:9, color:C.dim, marginTop:3, textAlign: isMine ? "right" : "left", paddingInline:4, display:"flex", alignItems:"center", gap:4, justifyContent: isMine ? "flex-end" : "flex-start" }}>
-                      {formatTime(m.timestamp)}
-                      {isMine && <span style={{ fontSize:8, color:"rgba(77,255,179,0.6)" }}>✓✓</span>}
-                    </div>
+              <div key={m.id} style={{ display:"flex", justifyContent: isMine ? "flex-end" : "flex-start" }}>
+                <div style={{ maxWidth:"85%" }}>
+                  <div style={{
+                    padding:"11px 16px", borderRadius: isMine ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
+                    background: isMine ? C.grad : "rgba(255,255,255,0.06)",
+                    border: isMine ? "none" : `1px solid ${C.border}`,
+                    fontSize:13, color: "#fff", lineHeight:1.5,
+                    boxShadow: isMine ? "0 4px 12px rgba(255,107,157,0.2)" : "none"
+                  }}>{m.text}</div>
+                  <div style={{ fontSize:9, color:C.dim, marginTop:4, textAlign: isMine ? "right" : "left" }}>
+                    {formatTime(m.timestamp)} {isMine && "✓"}
                   </div>
                 </div>
               </div>
@@ -1042,40 +1051,40 @@ const ChatScreen = ({ user, partnerData, setScreen }) => {
         </div>
       )}
 
-      {/* Delete confirmation */}
-      {selectedMsg && (
-        <div style={{ position:"relative", zIndex:3, padding:"8px 16px", background:"rgba(255,77,77,0.1)", borderTop:"1px solid rgba(255,77,77,0.3)", display:"flex", alignItems:"center", justifyContent:"space-between", animation:"fadeIn 0.2s ease" }}>
-          <span style={{ fontSize:12, color:"#ff6b6b", fontWeight:600 }}>Delete this message?</span>
-          <div style={{ display:"flex", gap:8 }}>
-            <button onClick={()=>setSelectedMsg(null)} style={{ padding:"6px 14px", borderRadius:10, background:"transparent", border:`1px solid ${C.border}`, color:C.muted, fontSize:11, cursor:"pointer", fontFamily:"'Nunito',sans-serif" }}>Cancel</button>
-            <button onClick={handleDeleteMsg} style={{ padding:"6px 14px", borderRadius:10, background:"#ff4444", border:"none", color:"#fff", fontSize:11, fontWeight:700, cursor:"pointer", fontFamily:"'Nunito',sans-serif" }}>🗑 Delete</button>
+      {/* FIXED BOTTOM BAR (Strictly above nav) */}
+      <div style={{ 
+        position:"absolute", bottom:"70px", left:0, right:0, zIndex:20, 
+        background:"rgba(13,10,20,0.98)", backdropFilter:"blur(15px)",
+        borderTop:`1px solid ${C.border}` 
+      }}>
+        {selectedMsg && (
+          <div style={{ padding:"10px 16px", display:"flex", justifyContent:"space-between", alignItems:"center", background:"rgba(255,68,68,0.1)" }}>
+            <span style={{ fontSize:12, color:"#ff4444" }}>Delete message?</span>
+            <div style={{ display:"flex", gap:10 }}>
+              <span onClick={()=>setSelectedMsg(null)} style={{ color:C.muted, fontSize:12, cursor:"pointer" }}>Cancel</span>
+              <span onClick={handleDeleteMsg} style={{ color:"#ff4444", fontSize:12, fontWeight:700, cursor:"pointer" }}>Delete</span>
+            </div>
           </div>
+        )}
+        
+        <div style={{ display:"flex", gap:8, padding:"12px 16px", alignItems:"center" }}>
+          <input
+            value={input}
+            onChange={e=>setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleSend()}
+            placeholder="Type a message..."
+            style={{ 
+              flex:1, padding:"12px 20px", borderRadius:25, 
+              background:"rgba(255,255,255,0.07)", border:`1px solid ${C.border}`, 
+              color:"#fff", fontSize:14, outline:"none" 
+            }}
+          />
+          <button onClick={() => handleSend()} style={{ 
+            width:46, height:46, borderRadius:"50%", background:C.grad, border:"none", 
+            color:"#fff", fontSize:20, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+            boxShadow: "0 4px 15px rgba(255,107,157,0.4)"
+          }}>↑</button>
         </div>
-      )}
-
-      {/* Quick Emoji Row */}
-      {partnerData && !selectedMsg && (
-        <div style={{ position:"relative", zIndex:2, display:"flex", gap:6, padding:"6px 16px", overflowX:"auto" }}>
-          {QUICK_EMOJIS.map(e => (
-            <button key={e} onClick={() => handleSend(e)} style={{
-              flexShrink:0, width:34, height:34, borderRadius:50, background:C.surface,
-              border:`1px solid ${C.border}`, fontSize:16, cursor:"pointer",
-              transition:"transform 0.15s"
-            }}>{e}</button>
-          ))}
-        </div>
-      )}
-
-      <div style={{ position:"relative", zIndex:2, padding:"8px 16px 20px", borderTop:`1px solid ${C.border}`, display:"flex", gap:8, alignItems:"center", background:"#0d0a14" }}>
-        <input
-          value={input}
-          onChange={e=>setInput(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && handleSend()}
-          placeholder="Send love…"
-          autoFocus
-          style={{ flex:1, padding:"12px 18px", borderRadius:50, background:"rgba(255,255,255,0.05)", border:`1px solid ${C.border}`, color:C.text, fontSize:13, outline:"none", fontFamily:"'Nunito',sans-serif" }}
-        />
-        <button onClick={() => handleSend()} style={{ width:42, height:42, borderRadius:50, background:C.grad, border:"none", fontSize:17, cursor:"pointer", boxShadow:"0 4px 16px rgba(255,107,157,0.4)", flexShrink:0 }}>↑</button>
       </div>
     </div>
   );
@@ -1185,7 +1194,6 @@ const MemoryScreen = ({ user, partnerData, setScreen }) => {
           </div>
         </div>
       )}
-      <BottomNav active="memory" setScreen={setScreen}/>
     </div>
   );
 };
@@ -1391,7 +1399,6 @@ const ProfileScreen = ({ user, userData, partnerData, memoryCount, setScreen }) 
           <span style={{ flex:1, fontSize:13, color: "#ff6b6b", fontWeight:500 }}>Sign Out</span>
         </div>
       </div>
-      <BottomNav active="profile" setScreen={setScreen}/>
     </div>
   );
 };
@@ -1522,7 +1529,6 @@ const DatesScreen = ({ user, partnerData, setScreen }) => {
         </button>
       </div>
 
-      <BottomNav active="home" setScreen={setScreen}/>
     </div>
   );
 };
@@ -1677,7 +1683,6 @@ const VirtualDateScreen = ({ user, partnerData, setScreen }) => {
           🌙 Begin Virtual Date Together
         </button>
       </div>
-      <BottomNav active="dates" setScreen={setScreen}/>
     </div>
   );
 };
@@ -1774,9 +1779,10 @@ const AIDiaryScreen = ({ user, userData, partnerData, setScreen }) => {
   };
 
   return (
-    <div style={{ minHeight:"100vh", position:"relative", overflowY:"auto", paddingBottom:90 }} className="screen">
+    <div style={{ height:"100%", display:"flex", flexDirection:"column", position:"relative", overflow:"hidden" }} className="screen">
       <GlassBg/>
 
+      {/* HEADER (Non-scrollable) */}
       <div style={{ position:"relative", zIndex:2, padding:"44px 20px 14px", display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
         <div>
           <div onClick={() => setScreen("home")} style={{ fontSize:12, color:C.muted, marginBottom:4, cursor:"pointer" }}>‹ Home</div>
@@ -1785,6 +1791,7 @@ const AIDiaryScreen = ({ user, userData, partnerData, setScreen }) => {
         </div>
       </div>
 
+      {/* TABS (Non-scrollable) */}
       <div style={{ position:"relative", zIndex:2, display:"flex", gap:6, padding:"0 20px 16px" }}>
         {["detect","diary","chat"].map(t=>(
           <button key={t} onClick={()=>setTab(t)} style={{
@@ -1796,6 +1803,9 @@ const AIDiaryScreen = ({ user, userData, partnerData, setScreen }) => {
           }}>{t==="detect"?"🧠 Detect" : t==="diary"?"📔 Diary" : "🤖 Chat"}</button>
         ))}
       </div>
+
+      {/* SCROLLABLE MAIN CONTENT AREA */}
+      <div style={{ flex:1, overflowY:"auto", position:"relative", zIndex:2, paddingBottom:"150px" }}>
 
       {tab==="detect" && (
         <div style={{ position:"relative", zIndex:2, padding:"0 20px", animation:"fadeIn 0.3s ease" }}>
@@ -1929,19 +1939,21 @@ const AIDiaryScreen = ({ user, userData, partnerData, setScreen }) => {
         </div>
       )}
 
+      </div>
+
       {tab==="chat" && (
-        <div style={{ position:"relative", zIndex:2, display:"flex", flexDirection:"column", height:"62vh", animation:"fadeIn 0.3s ease" }}>
-          <div style={{ flex:1, overflowY:"auto", padding:"12px 20px", display:"flex", flexDirection:"column", gap:12 }}>
+        <div style={{ position:"absolute", inset:0, zIndex:2, display:"flex", flexDirection:"column", animation:"fadeIn 0.3s ease", background: "#0d0a14", paddingTop: 160 }}>
+          <div style={{ flex:1, overflowY:"auto", padding:"12px 20px 100px", display:"flex", flexDirection:"column", gap:12 }}>
             {chatMessages.map((m,i)=>(
               <div key={i} style={{ display:"flex", justifyContent: m.ai?"flex-start":"flex-end", animation: "slideUp 0.3s ease" }}>
                 {m.ai && (
                   <div style={{ width:28, height:28, borderRadius:10, background:"linear-gradient(135deg,#c44dff,#6b9dff)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, marginRight:7, flexShrink:0, alignSelf:"flex-end" }}>🤖</div>
                 )}
                 <div style={{
-                  maxWidth:"72%", padding:"10px 14px", borderRadius: m.ai?"16px 16px 16px 4px":"16px 16px 4px 16px",
-                  background: m.ai ? "rgba(196,77,255,0.1)" : C.grad,
+                  maxWidth:"78%", padding:"10px 15px", borderRadius: m.ai?"16px 16px 16px 4px":"16px 16px 4px 16px",
+                  background: m.ai ? "rgba(196,77,255,0.08)" : C.grad,
                   border: m.ai ? "1px solid rgba(196,77,255,0.2)" : "none",
-                  fontSize:12, color:C.text, lineHeight:1.6,
+                  fontSize:13, color:C.text, lineHeight:1.6,
                   boxShadow: m.ai ? "none" : "0 4px 14px rgba(255,107,157,0.25)",
                 }}>{m.text}</div>
               </div>
@@ -1959,23 +1971,23 @@ const AIDiaryScreen = ({ user, userData, partnerData, setScreen }) => {
             <div ref={chatEndRef} />
           </div>
 
-          <div style={{ padding:"10px 20px 14px", borderTop:`1px solid ${C.border}`, display:"flex", gap:8 }}>
+          {/* AI CHAT INPUT FIXED ABOVE NAV */}
+          <div style={{ position:"absolute", bottom:"70px", left:0, right:0, padding:"10px 20px 14px", borderTop:`1px solid ${C.border}`, display:"flex", gap:8, background:"rgba(13,10,20,0.98)", zIndex:10 }}>
             <input
               value={chatInput} 
               onChange={e=>setChatInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSendChat()}
               placeholder="Dil ki baat batao AI ko..."
               style={{
-                flex:1, padding:"11px 16px", borderRadius:50,
+                flex:1, padding:"12px 18px", borderRadius:50,
                 background:"rgba(255,255,255,0.05)", border:`1px solid ${C.border}`,
-                color:C.text, fontSize:12, outline:"none", fontFamily:"'Nunito',sans-serif",
+                color:C.text, fontSize:13, outline:"none", fontFamily:"'Nunito',sans-serif",
               }}/>
-            <button onClick={handleSendChat} style={{ width:38, height:38, borderRadius:"50%", background:"linear-gradient(135deg,#c44dff,#6b9dff)", border:"none", color:"#fff", fontSize:15, cursor:"pointer", boxShadow:"0 4px 14px rgba(107,157,255,0.35)", opacity: chatInput.trim() ? 1 : 0.5 }}>↑</button>
+            <button onClick={handleSendChat} style={{ width:42, height:42, borderRadius:"50%", background:"linear-gradient(135deg,#c44dff,#6b9dff)", border:"none", color:"#fff", fontSize:17, cursor:"pointer", boxShadow:"0 4px 14px rgba(107,157,255,0.35)", opacity: chatInput.trim() ? 1 : 0.5 }}>↑</button>
           </div>
         </div>
       )}
 
-      <BottomNav active="home" setScreen={setScreen}/>
     </div>
   );
 };
@@ -2120,7 +2132,6 @@ const CapsuleScreen = ({ user, userData, partnerData, setScreen }) => {
           </div>
         )}
       </div>
-      <BottomNav active="home" setScreen={setScreen}/>
     </div>
   );
 };
@@ -2565,30 +2576,47 @@ export default function App() {
           <LoginScreen />
         ) : (
           <>
-            {activeScreen === "home" && (
-              <HomeScreen 
-                user={user} 
-                userData={userData} 
-                partnerData={partnerData} 
-                memoryCount={memoryCount}
-                dateCount={dateCount}
-                capsuleCount={capsuleCount}
-                newMsgCount={notifications.filter(n => n.type === "message").length}
-                setScreen={setActiveScreen} 
-                handleNotifications={() => setShowNotifications(true)} 
-              />
+            <div style={{ 
+              flex: 1, 
+              width: "100%", 
+              height: "100%", 
+              overflowY: "auto", 
+              overflowX: "hidden", 
+              position: "relative",
+              WebkitOverflowScrolling: "touch"
+            }}>
+              {activeScreen === "home" && (
+                <HomeScreen 
+                  user={user} 
+                  userData={userData} 
+                  partnerData={partnerData} 
+                  memoryCount={memoryCount}
+                  dateCount={dateCount}
+                  capsuleCount={capsuleCount}
+                  newMsgCount={notifications.filter(n => n.type === "message").length}
+                  setScreen={setActiveScreen} 
+                  handleNotifications={() => setShowNotifications(true)} 
+                />
+              )}
+              {activeScreen === "chat" && <ChatScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
+              {activeScreen === "memory" && <MemoryScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
+              {activeScreen === "profile" && <ProfileScreen user={user} userData={userData} partnerData={partnerData} memoryCount={memoryCount} setScreen={setActiveScreen} handleNotifications={() => setShowNotifications(true)} />}
+              {activeScreen === "dates" && <DatesScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
+              {activeScreen === "virtualDate" && <VirtualDateScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
+              {activeScreen === "capsule" && <CapsuleScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
+              { activeScreen === "sync" && <HeartSyncScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+              { activeScreen === "map" && <LoveMapScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+              { activeScreen === "games" && <GamesScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+              { activeScreen === "aidiary" && <AIDiaryScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+              { activeScreen === "together" && <TogetherModeScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+            </div>
+
+            {/* FIXED BOTTOM NAV */}
+            {activeScreen !== "splash" && (
+              <BottomNav active={
+                ["chat", "memory", "profile"].includes(activeScreen) ? activeScreen : "home"
+              } setScreen={setActiveScreen} />
             )}
-            {activeScreen === "chat" && <ChatScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
-            {activeScreen === "memory" && <MemoryScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
-            {activeScreen === "profile" && <ProfileScreen user={user} userData={userData} partnerData={partnerData} memoryCount={memoryCount} setScreen={setActiveScreen} handleNotifications={() => setShowNotifications(true)} />}
-            {activeScreen === "dates" && <DatesScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
-            {activeScreen === "virtualDate" && <VirtualDateScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
-            {activeScreen === "capsule" && <CapsuleScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
-            { activeScreen === "sync" && <HeartSyncScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
-            { activeScreen === "map" && <LoveMapScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
-            { activeScreen === "games" && <GamesScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
-            { activeScreen === "aidiary" && <AIDiaryScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
-            { activeScreen === "together" && <TogetherModeScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
 
             {/* Notification Drawer */}
             {showNotifications && (
