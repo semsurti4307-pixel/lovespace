@@ -1376,7 +1376,10 @@ const ProfileScreen = ({ user, userData, partnerData, memoryCount, setScreen, is
       <div style={{ position:"relative", zIndex:2, margin:"0 20px 20px" }}>
         {settings.map((s,i)=>(
           <div key={i} onClick={() => {
-            if (s.copy) navigator.clipboard.writeText(s.sub);
+            if (s.copy) {
+              navigator.clipboard.writeText(s.sub);
+              alert("Code Copied! ✨");
+            }
             if (s.action) s.action();
           }} style={{
             display:"flex", alignItems:"center", padding:"14px 16px",
