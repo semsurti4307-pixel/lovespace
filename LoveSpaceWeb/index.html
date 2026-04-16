@@ -15,19 +15,9 @@
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         window.deferredPrompt = e;
+        // Notify the app that install is ready
         window.dispatchEvent(new Event('pwa-ready-to-install'));
       });
-      // Global diagnostic error handler
-      window.onerror = function(msg, url, line, col, error) {
-        document.body.innerHTML = '<div style="background:black;color:red;padding:20px;font-family:monospace;white-space:pre-wrap;">' +
-          '<h1>JS ERROR FOUND!</h1>' +
-          'Msg: ' + msg + '\n' +
-          'File: ' + url + '\n' +
-          'Line: ' + line + '\n' + 
-          'Stack: ' + (error ? error.stack : 'no stack') +
-          '</div>';
-        return false;
-      };
     </script>
   </head>
   <body>

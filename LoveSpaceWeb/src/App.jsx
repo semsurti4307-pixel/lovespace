@@ -139,6 +139,7 @@ const C = {
   text:    "rgba(255,255,255,0.88)",
   muted:   "rgba(255,255,255,0.35)",
   dim:     "rgba(255,255,255,0.15)",
+  gradB:   "linear-gradient(135deg,#6b9dff,#4dffe0)",
 };
 
 /* ─── LOGO SVG ───────────────────────────────────────────── */
@@ -2597,90 +2598,86 @@ export default function App() {
     return () => window.removeEventListener('pwa-ready-to-install', handleInstallPrompt);
   }, []);
 
-  try {
-    return (
-      <>
-        <GlobalStyles/>
-        <AppContainer>
-          {loading ? (
-            <SplashScreen />
-          ) : !user ? (
-            <LoginScreen />
-          ) : (
-            <>
-              <div style={{ 
-                flex: 1, 
-                width: "100%", 
-                height: "100%", 
-                overflowY: "auto", 
-                overflowX: "hidden", 
-                position: "relative",
-                WebkitOverflowScrolling: "touch"
-              }}>
-                {activeScreen === "home" && (
-                  <HomeScreen 
-                    user={user} 
-                    userData={userData} 
-                    partnerData={partnerData} 
-                    memoryCount={memoryCount}
-                    dateCount={dateCount}
-                    capsuleCount={capsuleCount}
-                    newMsgCount={notifications.filter(n => n.type === "message").length}
-                    setScreen={setActiveScreen} 
-                    handleNotifications={() => setShowNotifications(true)} 
-                  />
-                )}
-                {activeScreen === "chat" && <ChatScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
-                {activeScreen === "memory" && <MemoryScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
-                {activeScreen === "profile" && <ProfileScreen user={user} userData={userData} partnerData={partnerData} memoryCount={memoryCount} setScreen={setActiveScreen} handleNotifications={() => setShowNotifications(true)} isInstallable={isInstallable} />}
-                {activeScreen === "dates" && <DatesScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
-                {activeScreen === "virtualDate" && <VirtualDateScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
-                {activeScreen === "capsule" && <CapsuleScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
-                { activeScreen === "sync" && <HeartSyncScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
-                { activeScreen === "map" && <LoveMapScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
-                { activeScreen === "games" && <GamesScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
-                { activeScreen === "aidiary" && <AIDiaryScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
-                { activeScreen === "together" && <TogetherModeScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
-              </div>
-
-              {/* FIXED BOTTOM NAV */}
-              {activeScreen !== "splash" && (
-                <BottomNav active={
-                  ["chat", "memory", "profile"].includes(activeScreen) ? activeScreen : "home"
-                } setScreen={setActiveScreen} />
+  return (
+    <>
+      <GlobalStyles/>
+      <AppContainer>
+        {loading ? (
+          <SplashScreen />
+        ) : !user ? (
+          <LoginScreen />
+        ) : (
+          <>
+            <div style={{ 
+              flex: 1, 
+              width: "100%", 
+              height: "100%", 
+              overflowY: "auto", 
+              overflowX: "hidden", 
+              position: "relative",
+              WebkitOverflowScrolling: "touch"
+            }}>
+              {activeScreen === "home" && (
+                <HomeScreen 
+                  user={user} 
+                  userData={userData} 
+                  partnerData={partnerData} 
+                  memoryCount={memoryCount}
+                  dateCount={dateCount}
+                  capsuleCount={capsuleCount}
+                  newMsgCount={notifications.filter(n => n.type === "message").length}
+                  setScreen={setActiveScreen} 
+                  handleNotifications={() => setShowNotifications(true)} 
+                />
               )}
+              {activeScreen === "chat" && <ChatScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
+              {activeScreen === "memory" && <MemoryScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
+              {activeScreen === "profile" && <ProfileScreen user={user} userData={userData} partnerData={partnerData} memoryCount={memoryCount} setScreen={setActiveScreen} handleNotifications={() => setShowNotifications(true)} isInstallable={isInstallable} />}
+              {activeScreen === "dates" && <DatesScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
+              {activeScreen === "virtualDate" && <VirtualDateScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
+              {activeScreen === "capsule" && <CapsuleScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
+              { activeScreen === "sync" && <HeartSyncScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+              { activeScreen === "map" && <LoveMapScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+              { activeScreen === "games" && <GamesScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+              { activeScreen === "aidiary" && <AIDiaryScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+              { activeScreen === "together" && <TogetherModeScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} /> }
+            </div>
 
-              {/* Notification Drawer */}
-              {showNotifications && (
-                <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.7)", backdropFilter:"blur(10px)", zIndex:1000, animation:"fadeIn 0.3s ease" }}>
-                  <div style={{ position:"absolute", bottom:0, width:"100%", background:"#111018", borderRadius:"32px 32px 0 0", padding:"32px 24px calc(32px + env(safe-area-inset-bottom))", maxHeight:"90%", overflowY:"auto" }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
-                      <h2 style={{ color:"#fff", fontSize:20 }}>Notifications</h2>
-                      <div style={{ display:"flex", gap:15 }}>
-                        <span onClick={async () => { await clearNotifications(user.uid); }} style={{ color:C.pink, fontSize:12, cursor:"pointer" }}>Clear All</span>
-                        <span onClick={() => setShowNotifications(false)} style={{ color:C.muted, fontSize:20, cursor:"pointer" }}>✕</span>
+            {/* FIXED BOTTOM NAV */}
+            {activeScreen !== "splash" && (
+              <BottomNav active={
+                ["chat", "memory", "profile"].includes(activeScreen) ? activeScreen : "home"
+              } setScreen={setActiveScreen} />
+            )}
+
+            {/* Notification Drawer */}
+            {showNotifications && (
+              <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.7)", backdropFilter:"blur(10px)", zIndex:1000, animation:"fadeIn 0.3s ease" }}>
+                <div style={{ position:"absolute", bottom:0, width:"100%", background:"#111018", borderRadius:"32px 32px 0 0", padding:"32px 24px calc(32px + env(safe-area-inset-bottom))", maxHeight:"90%", overflowY:"auto" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
+                    <h2 style={{ color:"#fff", fontSize:20 }}>Notifications</h2>
+                    <div style={{ display:"flex", gap:15 }}>
+                      <span onClick={async () => { await clearNotifications(user.uid); }} style={{ color:C.pink, fontSize:12, cursor:"pointer" }}>Clear All</span>
+                      <span onClick={() => setShowNotifications(false)} style={{ color:C.muted, fontSize:20, cursor:"pointer" }}>✕</span>
+                    </div>
+                  </div>
+                  {notifications.length === 0 ? (
+                    <div style={{ textAlign:"center", padding:"40px 0", color:C.muted }}>No new activities! ✨</div>
+                  ) : notifications.map(n => (
+                    <div key={n.id} style={{ padding:16, background:C.surface, borderRadius:16, border:`1px solid ${C.border}`, marginBottom:12, display:"flex", gap:12 }}>
+                      <div style={{ fontSize:20 }}>{n.type === "message" ? "💬" : n.type === "memory" ? "📸" : "✨"}</div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ color:"#fff", fontSize:13, fontWeight:600, marginBottom:2 }}>{n.fromName}</div>
+                        <div style={{ color:C.muted, fontSize:12 }}>{n.message}</div>
                       </div>
                     </div>
-                    {notifications.length === 0 ? (
-                      <div style={{ textAlign:"center", padding:"40px 0", color:C.muted }}>No new activities! ✨</div>
-                    ) : notifications.map(n => (
-                      <div key={n.id} style={{ padding:16, background:C.surface, borderRadius:16, border:`1px solid ${C.border}`, marginBottom:12, display:"flex", gap:12 }}>
-                        <div style={{ fontSize:20 }}>{n.type === "message" ? "💬" : n.type === "memory" ? "📸" : "✨"}</div>
-                        <div style={{ flex:1 }}>
-                          <div style={{ color:"#fff", fontSize:13, fontWeight:600, marginBottom:2 }}>{n.fromName}</div>
-                          <div style={{ color:C.muted, fontSize:12 }}>{n.message}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-              )}
-            </>
-          )}
-        </AppContainer>
-      </>
-    );
-  } catch (error) {
-    return <div style={{ color: 'red', padding: 20 }}>App Crash: {error.message}</div>;
-  }
+              </div>
+            )}
+          </>
+        )}
+      </AppContainer>
+    </>
+  );
 }
