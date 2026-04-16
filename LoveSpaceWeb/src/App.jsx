@@ -1199,7 +1199,7 @@ const MemoryScreen = ({ user, partnerData, setScreen }) => {
   );
 };
 
-const ProfileScreen = ({ user, userData, partnerData, memoryCount, setScreen }) => {
+const ProfileScreen = ({ user, userData, partnerData, memoryCount, setScreen, isInstallable }) => {
   const [loading, setLoading] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [editName, setEditName] = useState("");
@@ -1398,13 +1398,12 @@ const ProfileScreen = ({ user, userData, partnerData, memoryCount, setScreen }) 
             const { outcome } = await window.deferredPrompt.userChoice;
             if (outcome === 'accepted') {
               window.deferredPrompt = null;
-              document.getElementById('install-btn').style.display = 'none';
             }
           } else {
             alert("Open Browser Menu > Add to Home Screen to install! 📱");
           }
         }} style={{
-          display: "none", alignItems:"center", padding:"14px 16px",
+          display: isInstallable ? "flex" : "none", alignItems:"center", padding:"14px 16px",
           borderRadius:16, marginBottom:8, cursor:"pointer",
           background: C.grad, border:"none", color:"#fff", 
           boxShadow: "0 6px 20px rgba(255,107,157,0.35)", animation: "pulse 2s infinite"
@@ -2589,15 +2588,14 @@ export default function App() {
     };
   }, []);
 
+  const [isInstallable, setIsInstallable] = useState(false);
+  
   // PWA Install Prompt Listener
   useEffect(() => {
-    const showInstallBtn = () => {
-      const btn = document.getElementById('install-btn');
-      if (btn) btn.style.display = 'flex';
-    };
-    window.addEventListener('pwa-ready-to-install', showInstallBtn);
-    if (window.deferredPrompt) showInstallBtn();
-    return () => window.removeEventListener('pwa-ready-to-install', showInstallBtn);
+    const handleInstallPrompt = () => setIsInstallable(true);
+    window.addEventListener('pwa-ready-to-install', handleInstallPrompt);
+    if (window.deferredPrompt) setIsInstallable(true);
+    return () => window.removeEventListener('pwa-ready-to-install', handleInstallPrompt);
   }, []);
 
   return (
@@ -2634,7 +2632,7 @@ export default function App() {
               )}
               {activeScreen === "chat" && <ChatScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
               {activeScreen === "memory" && <MemoryScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
-              {activeScreen === "profile" && <ProfileScreen user={user} userData={userData} partnerData={partnerData} memoryCount={memoryCount} setScreen={setActiveScreen} handleNotifications={() => setShowNotifications(true)} />}
+              {activeScreen === "profile" && <ProfileScreen user={user} userData={userData} partnerData={partnerData} memoryCount={memoryCount} setScreen={setActiveScreen} handleNotifications={() => setShowNotifications(true)} isInstallable={isInstallable} />}
               {activeScreen === "dates" && <DatesScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
               {activeScreen === "virtualDate" && <VirtualDateScreen user={user} partnerData={partnerData} setScreen={setActiveScreen} />}
               {activeScreen === "capsule" && <CapsuleScreen user={user} userData={userData} partnerData={partnerData} setScreen={setActiveScreen} />}
