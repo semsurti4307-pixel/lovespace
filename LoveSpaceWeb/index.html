@@ -10,6 +10,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="LoveSpace" />
     <title>LoveSpace</title>
+    <script>
+      window.deferredPrompt = null;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        window.deferredPrompt = e;
+        // Notify the app that install is ready
+        window.dispatchEvent(new Event('pwa-ready-to-install'));
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

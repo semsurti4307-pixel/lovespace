@@ -1390,6 +1390,28 @@ const ProfileScreen = ({ user, userData, partnerData, memoryCount, setScreen }) 
           </div>
         ))}
         
+        {/* IN-APP INSTALL BUTTON */}
+        <div id="install-btn" onClick={async () => {
+          if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+            const { outcome } = await window.deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+              window.deferredPrompt = null;
+              document.getElementById('install-btn').style.display = 'none';
+            }
+          } else {
+            alert("Open Browser Menu > Add to Home Screen to install! 📱");
+          }
+        }} style={{
+          display: "none", alignItems:"center", padding:"14px 16px",
+          borderRadius:16, marginBottom:8, cursor:"pointer",
+          background: C.grad, border:"none", color:"#fff", 
+          boxShadow: "0 6px 20px rgba(255,107,157,0.35)", animation: "pulse 2s infinite"
+        }}>
+          <span style={{ fontSize:18, marginRight:12 }}>📥</span>
+          <span style={{ flex:1, fontSize:13, fontWeight:700 }}>Install LoveSpace App</span>
+        </div>
+
         <div onClick={handleLogout} style={{
           display:"flex", alignItems:"center", padding:"14px 16px",
           borderRadius:16, marginBottom:8, cursor:"pointer",
@@ -2564,6 +2586,17 @@ export default function App() {
       if (unsubNotifications) unsubNotifications();
       clearTimeout(timeout);
     };
+  }, []);
+
+  // PWA Install Prompt Listener
+  useEffect(() => {
+    const showInstallBtn = () => {
+      const btn = document.getElementById('install-btn');
+      if (btn) btn.style.display = 'flex';
+    };
+    window.addEventListener('pwa-ready-to-install', showInstallBtn);
+    if (window.deferredPrompt) showInstallBtn();
+    return () => window.removeEventListener('pwa-ready-to-install', showInstallBtn);
   }, []);
 
   return (
