@@ -11,6 +11,7 @@ import { addMapMemory, subscribeToMapMemories } from "./services/mapService";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, ZoomControl } from "react-leaflet";
 import L from "leaflet";
+import TogetherModeScreen from "./TogetherMode";
 
 /* ─── GLOBAL STYLES ─────────────────────────────────────── */
 const GlobalStyles = () => (
